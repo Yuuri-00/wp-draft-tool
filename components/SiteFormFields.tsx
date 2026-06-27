@@ -6,6 +6,7 @@ export interface SiteFormDefaults {
   systemPrompt?: string;
   categories?: string;
   codeBlockFormat?: string;
+  externalKey?: string;
 }
 
 export default function SiteFormFields({
@@ -67,6 +68,14 @@ export default function SiteFormFields({
           rows={3}
           defaultValue={defaultValues.codeBlockFormat}
           placeholder='<div class="my-plugin-codeblock"><pre><code>...</code></pre></div>'
+        />
+      </label>
+      <label>
+        外部連携キー（任意。外部から連携する際にこのサイトを識別するための任意の文字列）
+        <input
+          name="externalKey"
+          defaultValue={defaultValues.externalKey}
+          placeholder="例：my-blog"
         />
       </label>
     </>

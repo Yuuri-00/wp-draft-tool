@@ -58,6 +58,7 @@ async function main() {
     systemPrompt,
     categories: [],
     codeBlockFormat,
+    externalKey: "",
   });
   console.log(`Site作成完了: ${site.id} (Keywords DB: ${site.keywordsDbId})`);
   console.log(

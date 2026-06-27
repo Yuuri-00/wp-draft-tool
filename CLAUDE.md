@@ -2,7 +2,7 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-開発時の運用ルールは `.claude/rules/` を参照（設定の汎用性に関する判断基準、設計変更時の手順など）。
+開発時の運用ルールは `.claude/rules/` を参照（設定の汎用性に関するwp-draft-tool固有の判断材料、設計変更時の手順など）。設定分離の共通原則・判断基準は親フォルダの共通ルール（`.claude/rules/config-separation.md`、business-dashboardと共通）を参照。
 
 ## 概要
 

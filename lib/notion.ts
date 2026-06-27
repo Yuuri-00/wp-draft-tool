@@ -60,6 +60,7 @@ export interface Site {
   categories: string[];
   codeBlockFormat: string;
   keywordsDbId: string;
+  externalKey: string;
 }
 
 export interface SiteInput {
@@ -70,6 +71,7 @@ export interface SiteInput {
   systemPrompt: string;
   categories: string[];
   codeBlockFormat: string;
+  externalKey: string;
 }
 
 function parseCategories(text: string): string[] {
@@ -92,6 +94,7 @@ function pageToSite(page: any): Site {
     categories: parseCategories(fromRichText(props["Categories"]?.rich_text)),
     codeBlockFormat: fromRichText(props["Code Block Format"]?.rich_text),
     keywordsDbId: fromRichText(props["Keywords DB ID"]?.rich_text),
+    externalKey: fromRichText(props["External Key"]?.rich_text),
   };
 }
 
@@ -107,6 +110,14 @@ export async function getSite(siteId: string): Promise<Site> {
   return pageToSite(page);
 }
 
+// business-dashboard側のアカウントに設定された「外部連携キー」から対応するサイトを探す。
+// サイト数は少数想定のため一覧取得してフィルタする。
+export async function findSiteByExternalKey(externalKey: string): Promise<Site | null> {
+  if (!externalKey) return null;
+  const sites = await listSites();
+  return sites.find((site) => site.externalKey === externalKey) ?? null;
+}
+
 export async function createSite(input: SiteInput): Promise<Site> {
   const keywordsDbId = await provisionKeywordsDatabase(input.name);
   const page = await notion().pages.create({
@@ -120,6 +131,7 @@ export async function createSite(input: SiteInput): Promise<Site> {
       Categories: { rich_text: toRichText(input.categories.join(", ")) },
       "Code Block Format": { rich_text: toRichText(input.codeBlockFormat) },
       "Keywords DB ID": { rich_text: toRichText(keywordsDbId) },
+      "External Key": { rich_text: toRichText(input.externalKey) },
     },
   });
   return pageToSite(page);
@@ -136,6 +148,7 @@ export async function updateSite(siteId: string, input: SiteInput): Promise<Site
       "System Prompt": { rich_text: toRichText(input.systemPrompt) },
       Categories: { rich_text: toRichText(input.categories.join(", ")) },
       "Code Block Format": { rich_text: toRichText(input.codeBlockFormat) },
+      "External Key": { rich_text: toRichText(input.externalKey) },
     },
   });
   return pageToSite(page);
@@ -302,6 +315,7 @@ export async function setupSitesDatabase(parentPage: string): Promise<string> {
         Categories: { rich_text: {} },
         "Code Block Format": { rich_text: {} },
         "Keywords DB ID": { rich_text: {} },
+        "External Key": { rich_text: {} },
       },
     },
   });

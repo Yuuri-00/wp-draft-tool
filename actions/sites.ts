@@ -18,6 +18,7 @@ function parseSiteInput(formData: FormData): SiteInput {
     systemPrompt: String(formData.get("systemPrompt") ?? ""),
     categories,
     codeBlockFormat: String(formData.get("codeBlockFormat") ?? "").trim(),
+    externalKey: String(formData.get("externalKey") ?? "").trim(),
   };
 }
 
