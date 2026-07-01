@@ -237,6 +237,35 @@ async function generateSlug(
   return `${sanitized}-${sequence}`;
 }
 
+// --- キーワード生成 ---
+
+export interface GenerateKeywordsInput {
+  systemPrompt: string;
+  category: string;
+  count: number;
+  provider: AiProvider;
+  model: string;
+}
+
+export async function generateKeywords(input: GenerateKeywordsInput): Promise<string[]> {
+  const userContent = `カテゴリ「${input.category}」向けのSEOキーワードを${input.count}件提案してください。
+
+以下のJSON形式のみで返してください（説明文・コードブロック不要）：
+{"keywords":["キーワード1","キーワード2",...]}
+
+【ルール】
+- 読者が実際に検索しそうな具体的なキーワード
+- 各キーワードは10〜30文字程度
+- 重複なし、${input.count}件ちょうど返す`;
+
+  const text = await callModel(input.provider, input.model, input.systemPrompt, userContent);
+  const { keywords } = extractJson<{ keywords: string[] }>(text);
+  if (!Array.isArray(keywords) || keywords.length === 0) {
+    throw new Error("キーワードの生成結果が空です。");
+  }
+  return keywords;
+}
+
 // --- オーケストレーター ---
 
 export async function generateArticle(

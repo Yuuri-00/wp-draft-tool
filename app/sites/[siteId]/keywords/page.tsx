@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { getSite, listKeywords } from "@/lib/notion";
-import { addKeywordAction, createDraftAction } from "@/actions/keywords";
+import { addKeywordAction, createDraftAction, generateKeywordsAction, deleteKeywordAction } from "@/actions/keywords";
 
 export const dynamic = "force-dynamic";
 
@@ -43,12 +43,15 @@ export default async function KeywordsPage({
     : allKeywords;
 
   const addAction = addKeywordAction.bind(null, siteId, site.keywordsDbId);
+  const generateAction = generateKeywordsAction.bind(null, siteId, site.keywordsDbId);
   const banner = parseBanner(result);
 
   return (
     <main className="container">
       <p>
-        <Link href={`/sites/${siteId}`}>← {site.name} のアカウント設定</Link>
+        <Link href="/sites">← サイト一覧</Link>
+        {" › "}
+        <Link href={`/sites/${siteId}`}>{site.name} のアカウント設定</Link>
       </p>
       <h1>{site.name} のキーワードリスト</h1>
 
@@ -93,6 +96,21 @@ export default async function KeywordsPage({
         <button type="submit">追加</button>
       </form>
 
+      {site.categories.length > 0 ? (
+        <form action={generateAction} className="add-keyword-form">
+          <select name="category" required defaultValue="">
+            <option value="" disabled>カテゴリを選択</option>
+            {site.categories.map((category) => (
+              <option key={category} value={category}>{category}</option>
+            ))}
+          </select>
+          <input type="number" name="count" min="1" max="20" defaultValue="5" />
+          <button type="submit">AIでキーワード生成</button>
+        </form>
+      ) : (
+        <p>AIキーワード生成はカテゴリ設定後に使えます。</p>
+      )}
+
       <table>
         <thead>
           <tr>
@@ -108,6 +126,7 @@ export default async function KeywordsPage({
           {keywords.map((keyword) => {
             const used = Boolean(keyword.postId);
             const draftAction = createDraftAction.bind(null, siteId, keyword.id);
+            const delAction = deleteKeywordAction.bind(null, siteId, keyword.id);
             return (
               <tr key={keyword.id}>
                 <td>{keyword.keyword}</td>
@@ -121,10 +140,13 @@ export default async function KeywordsPage({
                 </td>
                 <td>
                   {!used && (
-                    <form action={draftAction}>
+                    <form action={draftAction} style={{ display: "inline" }}>
                       <button type="submit">作成</button>
                     </form>
                   )}
+                  <form action={delAction} style={{ display: "inline" }}>
+                    <button type="submit">削除</button>
+                  </form>
                 </td>
               </tr>
             );

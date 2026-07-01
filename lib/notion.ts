@@ -299,6 +299,10 @@ export async function markKeywordUsed(
   await setKeywordResult(keywordPageId, postId, new Date().toISOString());
 }
 
+export async function deleteKeyword(keywordPageId: string): Promise<void> {
+  await notion().pages.update({ page_id: keywordPageId, archived: true });
+}
+
 // --- 初回セットアップ用 (scripts/setup-notion.ts から呼ばれる) ---
 
 export async function setupSitesDatabase(parentPage: string): Promise<string> {
