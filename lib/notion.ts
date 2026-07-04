@@ -296,7 +296,10 @@ export async function markKeywordUsed(
   keywordPageId: string,
   postId: string
 ): Promise<void> {
-  await setKeywordResult(keywordPageId, postId, new Date().toISOString());
+  const now = new Date();
+  const jst = new Date(now.getTime() + 9 * 60 * 60 * 1000);
+  const usedAt = jst.toISOString().replace("Z", "+09:00");
+  await setKeywordResult(keywordPageId, postId, usedAt);
 }
 
 export async function deleteKeyword(keywordPageId: string): Promise<void> {

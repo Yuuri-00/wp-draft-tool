@@ -31,8 +31,12 @@ export async function postDraft(
   });
 
   if (!response.ok) {
-    const error = await response.json().catch(() => ({}));
-    throw new Error(`投稿失敗 [${response.status}]: ${JSON.stringify(error)}`);
+    const body = await response.text().catch(() => "");
+    const contentType = response.headers.get("content-type") ?? "";
+    const detail = contentType.includes("json")
+      ? body.slice(0, 300)
+      : `(HTML) ${body.slice(0, 200)}`;
+    throw new Error(`投稿失敗 [${response.status}]: ${detail}`);
   }
 
   return response.json();
