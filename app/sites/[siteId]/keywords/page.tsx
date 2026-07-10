@@ -135,7 +135,9 @@ export default async function KeywordsPage({
                 <td>{keyword.postId || "-"}</td>
                 <td>
                   {keyword.usedAt
-                    ? new Date(keyword.usedAt).toLocaleString("ja-JP")
+                    ? new Date(keyword.usedAt).toLocaleString("ja-JP", {
+                        timeZone: "Asia/Tokyo",
+                      })
                     : "-"}
                 </td>
                 <td>
